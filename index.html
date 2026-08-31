@@ -60,6 +60,7 @@
   table.wishlist th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);padding:6px 8px;border-bottom:1px solid var(--border);}
   table.wishlist td{padding:8px;border-bottom:1px solid var(--border-light);vertical-align:top;}
   .table-scroll{overflow-x:auto;}
+  .ref-img{width:100%;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:22px;display:block;}
   table.fret{width:100%;border-collapse:collapse;font-size:13px;min-width:480px;}
   table.fret th, table.fret td{padding:6px 8px;text-align:center;border:1px solid var(--border-light);}
   table.fret th{background:var(--border-light);font-size:11.5px;}
@@ -148,46 +149,15 @@ Why,        why Georgia, why?</div>
 
     <div class="pane" id="pane-reference">
       <div class="section">
-        <div class="ref-label">Fretboard &mdash; natural notes, frets 1&ndash;12</div>
-        <div class="table-scroll">
-        <table class="fret">
-          <tr><th>String</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th></tr>
-          <tr><td>e (high)</td><td>F</td><td>F#</td><td>G</td><td>G#</td><td>A</td><td>A#</td><td>B</td><td>C</td><td>C#</td><td>D</td><td>D#</td><td>E</td></tr>
-          <tr><td>B</td><td>C</td><td>C#</td><td>D</td><td>D#</td><td>E</td><td>F</td><td>F#</td><td>G</td><td>G#</td><td>A</td><td>A#</td><td>B</td></tr>
-          <tr><td>G</td><td>G#</td><td>A</td><td>A#</td><td>B</td><td>C</td><td>C#</td><td>D</td><td>D#</td><td>E</td><td>F</td><td>F#</td><td>G</td></tr>
-          <tr><td>D</td><td>D#</td><td>E</td><td>F</td><td>F#</td><td>G</td><td>G#</td><td>A</td><td>A#</td><td>B</td><td>C</td><td>C#</td><td>D</td></tr>
-          <tr><td>A</td><td>A#</td><td>B</td><td>C</td><td>C#</td><td>D</td><td>D#</td><td>E</td><td>F</td><td>F#</td><td>G</td><td>G#</td><td>A</td></tr>
-          <tr><td>E (low)</td><td>F</td><td>F#</td><td>G</td><td>G#</td><td>A</td><td>A#</td><td>B</td><td>C</td><td>C#</td><td>D</td><td>D#</td><td>E</td></tr>
-        </table>
-        </div>
+        <div class="ref-label">Key of G Major — fretboard notes</div>
+        <img class="ref-img" src="images/key-of-g-fretboard.jpg" alt="Key of G Major fretboard chart, natural notes frets 1-12, with finger color coding">
 
-        <div class="ref-label">G major scale</div>
-        <div class="scale-row">
-          <span class="scale-note">1 &middot; G</span><span class="scale-note">2 &middot; A</span><span class="scale-note">3 &middot; B</span><span class="scale-note">4 &middot; C</span><span class="scale-note">5 &middot; D</span><span class="scale-note">6 &middot; E</span><span class="scale-note">7 &middot; F#</span><span class="scale-note">1 &middot; G</span>
-        </div>
+        <div class="ref-label">Key of G Major — scale and diatonic chords</div>
+        <img class="ref-img" src="images/key-of-g-scale-and-chords.jpg" alt="G major scale notation and the seven diatonic chords: G, Am, Bm, C, D, Em, F#dim">
 
-        <div class="ref-label">Diatonic chords in the key of G</div>
-        <div class="table-scroll">
-        <table class="fret">
-          <tr><th>Degree</th><td>I</td><td>ii</td><td>iii</td><td>IV</td><td>V</td><td>vi</td><td>vii&deg;</td></tr>
-          <tr><th>Chord</th><td>G</td><td>Am</td><td>Bm</td><td>C</td><td>D</td><td>Em</td><td>F#dim</td></tr>
-        </table>
-        </div>
-
-        <div class="ref-label">Chord shapes (open, low string to high)</div>
-        <div class="table-scroll">
-        <table class="fret">
-          <tr><th>Chord</th><th>E</th><th>A</th><th>D</th><th>G</th><th>B</th><th>e</th></tr>
-          <tr><td>Em</td><td>0</td><td>2</td><td>2</td><td>0</td><td>0</td><td>0</td></tr>
-          <tr><td>Am</td><td>x</td><td>0</td><td>2</td><td>2</td><td>1</td><td>0</td></tr>
-          <tr><td>C</td><td>x</td><td>3</td><td>2</td><td>0</td><td>1</td><td>0</td></tr>
-          <tr><td>G</td><td>3</td><td>2</td><td>0</td><td>0</td><td>0</td><td>3</td></tr>
-          <tr><td>D</td><td>x</td><td>x</td><td>0</td><td>2</td><td>3</td><td>2</td></tr>
-          <tr><td>A</td><td>x</td><td>0</td><td>2</td><td>2</td><td>2</td><td>0</td></tr>
-          <tr><td>E</td><td>0</td><td>2</td><td>2</td><td>1</td><td>0</td><td>0</td></tr>
-        </table>
-        </div>
-        <div class="song-note" style="margin-top:8px;">Bm and F#dim are stretch chords &mdash; follow the finger colors in Key of G Major.pdf directly rather than a tab shorthand.</div>
+        <div class="ref-label">Why Georgia — chord chart</div>
+        <img class="ref-img" src="images/why-georgia-chart.jpg" alt="Why Georgia chord chart and lyrics excerpt, with the F-C-G outro diagram">
+        <div class="song-note" style="margin-top:-8px;">Full lyrics and chords for Why Georgia are also on the Songs tab.</div>
       </div>
     </div>
     <div class="generated" id="generatedStamp"></div>
