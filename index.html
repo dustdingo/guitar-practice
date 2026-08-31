@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Guitar Practice</title>
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --bg:#FAF8F6; --surface:#fff; --border:#E7E2DC; --border-light:#F0ECE6;
+    --text:#151312; --text-muted:#726C67; --text-faint:#9C948C;
+    --accent:#8F3B2E; --accent-bg:#F7E9E5;
+    --green:#3B6D11; --green-bg:#EFF4E6;
+    --amber:#92400E; --amber-bg:#FFF6E9;
+    --shadow:0 2px 10px rgba(21,19,18,.06), 0 16px 40px rgba(21,19,18,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--bg);}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);font-size:16px;-webkit-font-smoothing:antialiased;padding-bottom:40px;}
+  .shell{max-width:720px;margin:0 auto;padding:16px 14px 32px;}
+  @media(min-width:701px){ .shell{padding:28px 24px 40px;} }
+  .app-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;}
+  .header{padding:22px 20px 0;}
+  .header-eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px;}
+  .header-title{font-size:26px;font-weight:800;letter-spacing:-.01em;}
+  .header-sub{font-size:13.5px;color:var(--text-muted);margin-top:4px;}
+  .progress-wrap{margin:16px 0 0;}
+  .progress-label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-muted);margin-bottom:5px;}
+  .progress-bg{height:8px;background:var(--border-light);border-radius:5px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--accent);border-radius:5px;transition:width .3s;}
+  .tabs{display:flex;gap:20px;overflow-x:auto;border-bottom:1px solid var(--border);margin-top:18px;padding:0 20px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{padding:0 0 12px;font-size:15px;font-weight:600;color:var(--text-muted);white-space:nowrap;border-bottom:2px solid transparent;cursor:pointer;flex-shrink:0;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+  .tab.active{color:var(--text);border-bottom-color:var(--accent);}
+  .pane{display:none;}
+  .pane.active{display:block;}
+  .section{padding:20px;}
+  .section + .section{border-top:1px solid var(--border-light);}
+  .module-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;}
+  .module-title{font-size:16px;font-weight:700;}
+  .module-count{font-size:12px;color:var(--text-faint);font-weight:600;}
+  .item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;cursor:pointer;}
+  .item + .item{border-top:1px solid var(--border-light);}
+  .item input[type=checkbox]{width:19px;height:19px;flex-shrink:0;margin-top:2px;accent-color:var(--accent);}
+  .item-text{font-size:14.5px;line-height:1.5;flex:1;}
+  .item.done .item-text{color:var(--text-faint);text-decoration:line-through;}
+  .item code{background:var(--border-light);padding:1px 5px;border-radius:4px;font-size:12.5px;}
+  .callout{background:var(--accent-bg);border-radius:12px;padding:14px 16px;font-size:13.5px;color:var(--text);line-height:1.55;margin-bottom:16px;}
+  .callout b{color:var(--accent);}
+  .song-card{border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
+  .song-title{font-size:16px;font-weight:700;}
+  .song-artist{font-size:13px;color:var(--text-muted);margin-bottom:8px;}
+  .song-chords{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;}
+  .chip{font-size:12px;font-weight:700;background:var(--border-light);color:var(--text);padding:3px 10px;border-radius:100px;}
+  .lyric-block{background:var(--bg);border:1px solid var(--border-light);border-radius:10px;padding:12px 14px;margin-top:10px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;line-height:1.7;white-space:pre-wrap;overflow-x:auto;}
+  .song-note{font-size:12.5px;color:var(--text-muted);margin-top:8px;line-height:1.5;}
+  .learned-toggle{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13.5px;font-weight:600;cursor:pointer;}
+  .learned-toggle input{width:18px;height:18px;accent-color:var(--green);}
+  table.wishlist{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;}
+  table.wishlist th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);padding:6px 8px;border-bottom:1px solid var(--border);}
+  table.wishlist td{padding:8px;border-bottom:1px solid var(--border-light);vertical-align:top;}
+  .table-scroll{overflow-x:auto;}
+  table.fret{width:100%;border-collapse:collapse;font-size:13px;min-width:480px;}
+  table.fret th, table.fret td{padding:6px 8px;text-align:center;border:1px solid var(--border-light);}
+  table.fret th{background:var(--border-light);font-size:11.5px;}
+  table.fret td:first-child, table.fret th:first-child{text-align:left;font-weight:700;background:var(--border-light);position:sticky;left:0;}
+  .ref-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);margin:18px 0 8px;}
+  .ref-label:first-child{margin-top:0;}
+  .scale-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .scale-note{background:var(--accent);color:#fff;font-weight:700;font-size:13px;padding:5px 12px;border-radius:100px;}
+  .generated{font-size:12px;color:var(--text-faint);text-align:center;padding:16px 0 4px;}
+  #syncStatus{font-size:11.5px;color:var(--text-faint);}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="app-card">
+    <div class="header">
+      <div class="header-eyebrow">Adam's Guitar Practice</div>
+      <div class="header-title">Zero to Strumming</div>
+      <div class="header-sub">A self-paced curriculum, no schedule attached. Check things off as you go &mdash; <span id="syncStatus">loading…</span></div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Overall progress</span><span id="progressText">0 / 0</span></div>
+        <div class="progress-bg"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="curriculum">Curriculum</button>
+      <button class="tab" data-tab="songs">Songs</button>
+      <button class="tab" data-tab="reference">Reference</button>
+    </div>
+
+    <div class="pane active" id="pane-curriculum">
+      <div class="section">
+        <div class="callout"><b>How to use this:</b> work through the modules roughly in order. Chords marked "your chart" come from Key of G Major.pdf. Nothing here is timed &mdash; go at whatever pace feels right.</div>
+      </div>
+      <div id="curriculumList"></div>
+    </div>
+
+    <div class="pane" id="pane-songs">
+      <div class="section">
+        <div class="module-title" style="margin-bottom:12px;">In Progress</div>
+        <div class="song-card">
+          <div class="song-title">Why Georgia</div>
+          <div class="song-artist">John Mayer &middot; Module 9</div>
+          <div class="song-chords">
+            <span class="chip">Em</span><span class="chip">D</span><span class="chip">G</span><span class="chip">C</span><span class="chip">A</span><span class="chip">F</span>
+          </div>
+          <div class="lyric-block">Em              D              G              C
+'Cause I... wonder sometimes about the outcome
+Em              D           G   A
+Of a still verdictless life
+
+[Chorus, x4 at the end over G - D]
+       D          A         G
+Am I living it right?
+       D          A         Em
+Am I living it right?
+       D          A         G
+Am I living it right?
+F                    C
+Why,        why Georgia, why?</div>
+          <div class="song-note">F chord: your PDF shows a partial voicing near the 1st fret (low E string), not a full barre F &mdash; use the exact shape in Why Georgia.pdf.</div>
+          <label class="learned-toggle">
+            <input type="checkbox" id="song-georgia">
+            <span>I can play this start to finish</span>
+          </label>
+        </div>
+      </div>
+      <div class="section">
+        <div class="module-title" style="margin-bottom:4px;">Wishlist</div>
+        <div class="song-note" style="margin-bottom:10px;">Beginner-friendly songs using the curriculum chords. Pick 2&ndash;3 for Module 10 &mdash; tell your assistant to move one to "In Progress" when you're ready.</div>
+        <div class="table-scroll">
+        <table class="wishlist">
+          <tr><th>Song</th><th>Artist</th><th>Chords</th><th>Why it works</th></tr>
+          <tr><td>Horse with No Name</td><td>America</td><td>Em, D6/9</td><td>Just two shapes, whole song</td></tr>
+          <tr><td>Knockin' on Heaven's Door</td><td>Bob Dylan</td><td>G, D, Am, C</td><td>Classic 4-chord loop, slow tempo</td></tr>
+          <tr><td>Three Little Birds</td><td>Bob Marley</td><td>A, D, E</td><td>Only 3 chords, forgiving rhythm</td></tr>
+          <tr><td>Sweet Home Alabama</td><td>Lynyrd Skynyrd</td><td>D, C, G</td><td>Straightforward 3-chord riff into strum</td></tr>
+          <tr><td>Brown Eyed Girl</td><td>Van Morrison</td><td>G, C, D, Em</td><td>Exactly the Module 5 chord set</td></tr>
+          <tr><td>Riptide</td><td>Vance Joy</td><td>Am, G, C</td><td>Very common first song, simple pattern</td></tr>
+          <tr><td>I'm Yours</td><td>Jason Mraz</td><td>G, D, Em, C</td><td>Same 4 chords as Georgia's verse</td></tr>
+          <tr><td>Wonderwall</td><td>Oasis</td><td>Em7, G, Dsus4, A7sus4</td><td>Iconic, learnable once Module 6&ndash;7 chords are solid</td></tr>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-reference">
+      <div class="section">
+        <div class="ref-label">Fretboard &mdash; natural notes, frets 1&ndash;12</div>
+        <div class="table-scroll">
+        <table class="fret">
+          <tr><th>String</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th></tr>
+          <tr><td>e (high)</td><td>F</td><td>F#</td><td>G</td><td>G#</td><td>A</td><td>A#</td><td>B</td><td>C</td><td>C#</td><td>D</td><td>D#</td><td>E</td></tr>
+          <tr><td>B</td><td>C</td><td>C#</td><td>D</td><td>D#</td><td>E</td><td>F</td><td>F#</td><td>G</td><td>G#</td><td>A</td><td>A#</td><td>B</td></tr>
+          <tr><td>G</td><td>G#</td><td>A</td><td>A#</td><td>B</td><td>C</td><td>C#</td><td>D</td><td>D#</td><td>E</td><td>F</td><td>F#</td><td>G</td></tr>
+          <tr><td>D</td><td>D#</td><td>E</td><td>F</td><td>F#</td><td>G</td><td>G#</td><td>A</td><td>A#</td><td>B</td><td>C</td><td>C#</td><td>D</td></tr>
+          <tr><td>A</td><td>A#</td><td>B</td><td>C</td><td>C#</td><td>D</td><td>D#</td><td>E</td><td>F</td><td>F#</td><td>G</td><td>G#</td><td>A</td></tr>
+          <tr><td>E (low)</td><td>F</td><td>F#</td><td>G</td><td>G#</td><td>A</td><td>A#</td><td>B</td><td>C</td><td>C#</td><td>D</td><td>D#</td><td>E</td></tr>
+        </table>
+        </div>
+
+        <div class="ref-label">G major scale</div>
+        <div class="scale-row">
+          <span class="scale-note">1 &middot; G</span><span class="scale-note">2 &middot; A</span><span class="scale-note">3 &middot; B</span><span class="scale-note">4 &middot; C</span><span class="scale-note">5 &middot; D</span><span class="scale-note">6 &middot; E</span><span class="scale-note">7 &middot; F#</span><span class="scale-note">1 &middot; G</span>
+        </div>
+
+        <div class="ref-label">Diatonic chords in the key of G</div>
+        <div class="table-scroll">
+        <table class="fret">
+          <tr><th>Degree</th><td>I</td><td>ii</td><td>iii</td><td>IV</td><td>V</td><td>vi</td><td>vii&deg;</td></tr>
+          <tr><th>Chord</th><td>G</td><td>Am</td><td>Bm</td><td>C</td><td>D</td><td>Em</td><td>F#dim</td></tr>
+        </table>
+        </div>
+
+        <div class="ref-label">Chord shapes (open, low string to high)</div>
+        <div class="table-scroll">
+        <table class="fret">
+          <tr><th>Chord</th><th>E</th><th>A</th><th>D</th><th>G</th><th>B</th><th>e</th></tr>
+          <tr><td>Em</td><td>0</td><td>2</td><td>2</td><td>0</td><td>0</td><td>0</td></tr>
+          <tr><td>Am</td><td>x</td><td>0</td><td>2</td><td>2</td><td>1</td><td>0</td></tr>
+          <tr><td>C</td><td>x</td><td>3</td><td>2</td><td>0</td><td>1</td><td>0</td></tr>
+          <tr><td>G</td><td>3</td><td>2</td><td>0</td><td>0</td><td>0</td><td>3</td></tr>
+          <tr><td>D</td><td>x</td><td>x</td><td>0</td><td>2</td><td>3</td><td>2</td></tr>
+          <tr><td>A</td><td>x</td><td>0</td><td>2</td><td>2</td><td>2</td><td>0</td></tr>
+          <tr><td>E</td><td>0</td><td>2</td><td>2</td><td>1</td><td>0</td><td>0</td></tr>
+        </table>
+        </div>
+        <div class="song-note" style="margin-top:8px;">Bm and F#dim are stretch chords &mdash; follow the finger colors in Key of G Major.pdf directly rather than a tab shorthand.</div>
+      </div>
+    </div>
+    <div class="generated" id="generatedStamp"></div>
+  </div>
+</div>
+
+<script>
+// ---------- Curriculum data (mirrors guitar-curriculum.md) ----------
+const MODULES = [
+  {id:"m0", title:"Module 0 — Setup", items:[
+    "Learn the parts of the guitar (headstock, tuning pegs, nut, frets, fretboard, body, bridge, strings)",
+    "Learn proper sitting position and how to hold the guitar",
+    "Learn to read a chord diagram: dots = fingers, numbers = fret, X = don't play, O = open",
+    "Learn the string names low to high: E A D G B e",
+    "Tune the guitar to standard tuning using a tuner app"
+  ]},
+  {id:"m1", title:"Module 1 — Fretting Hand Fundamentals", items:[
+    "Learn finger numbering: 1 index, 2 middle, 3 ring, 4 pinky",
+    "Practice pressing single notes cleanly on each string, no buzzing",
+    "Learn proper thumb position on the back of the neck",
+    "Finger independence drill: walk fingers 1-2-3-4 up a string, one fret each"
+  ]},
+  {id:"m2", title:"Module 2 — First Chords: The Easy Three", items:[
+    "Em — <code>0 2 2 0 0 0</code> (2 fingers)",
+    "Am — <code>x 0 2 2 1 0</code> (3 fingers)",
+    "C — <code>x 3 2 0 1 0</code> (3 fingers)",
+    "Practice switching Em to Am and back",
+    "Practice switching Am to C and back"
+  ]},
+  {id:"m3", title:"Module 3 — Strumming Hand Basics", items:[
+    "Decide pick or fingers, and learn how to hold a pick if using one",
+    "Practice steady down-strums on open strings",
+    "Practice down-up strumming on open strings",
+    "Learn the basic strum pattern: Down-Down-Up-Up-Down-Up",
+    "Apply that pattern to a single held chord (Em) until steady"
+  ]},
+  {id:"m4", title:"Module 4 — Expanding the Chord Vocabulary", items:[
+    "G — your chart's version, same notes as <code>3 2 0 0 0 3</code>",
+    "D — <code>x x 0 2 3 2</code>",
+    "Practice switching G to D and back",
+    "Practice switching C to G and back",
+    "Practice switching D to Em and back"
+  ]},
+  {id:"m5", title:"Module 5 — Putting Chords and Strumming Together", items:[
+    "Play G - Em - C - D with slow down-strums",
+    "Add the Down-Down-Up-Up-Down-Up pattern to that progression",
+    "Focus on clean chord changes landing on the beat"
+  ]},
+  {id:"m6", title:"Module 6 — Key of G Diatonic Chords", items:[
+    "Bm — the iii chord in your chart (a stretch, take it slow)",
+    "F#dim — the vii° chord, mostly a passing chord, low priority",
+    "Review: play all seven diatonic chords in order — G, Am, Bm, C, D, Em, F#dim"
+  ]},
+  {id:"m7", title:"Module 7 — Rounding Out the Beginner Chord Set", items:[
+    "A — <code>x 0 2 2 2 0</code>",
+    "E — <code>0 2 2 1 0 0</code>",
+    "F (simplified) — see the partial voicing in Why Georgia.pdf",
+    "Practice switching A to D and back",
+    "Practice switching E to Am and back"
+  ]},
+  {id:"m8", title:"Module 8 — Reading Chord Charts and Lyric Sheets", items:[
+    "Learn how chords-over-lyrics sheets work",
+    "Practice changing chords in time while speaking the lyrics, no strumming yet"
+  ]},
+  {id:"m9", title:"Module 9 — First Full Song", items:[
+    "Learn Why Georgia — John Mayer (see Songs tab)",
+    "Play through the chorus slowly, chord by chord",
+    "Add the strum pattern once changes are clean",
+    "Play the full excerpt at tempo"
+  ]},
+  {id:"m10", title:"Module 10 — Building a Repertoire", items:[
+    "Pick your next 2–3 songs from the Songs tab wishlist",
+    "Learn any new chords those songs need",
+    "Play each one start to finish at a comfortable tempo"
+  ]},
+  {id:"m11", title:"Module 11 — Notes and Basic Theory (optional)", items:[
+    "Learn the natural notes on the low E string, frets 1–12",
+    "Learn the natural notes on the A string",
+    "Learn the G major scale ascending",
+    "Play the G major scale descending",
+    "Understand what \"key of G\" means"
+  ]}
+];
+
+const curriculumListEl = document.getElementById("curriculumList");
+let TOTAL_ITEMS = 0;
+MODULES.forEach(mod => {
+  const section = document.createElement("div");
+  section.className = "section";
+  const head = document.createElement("div");
+  head.className = "module-head";
+  head.innerHTML = `<div class="module-title">${mod.title}</div><div class="module-count" id="count-${mod.id}"></div>`;
+  section.appendChild(head);
+  mod.items.forEach((text, i) => {
+    TOTAL_ITEMS++;
+    const id = `${mod.id}-${i+1}`;
+    const row = document.createElement("label");
+    row.className = "item";
+    row.id = `item-${id}`;
+    row.innerHTML = `<input type="checkbox" data-id="${id}"><span class="item-text">${text}</span>`;
+    section.appendChild(row);
+  });
+  curriculumListEl.appendChild(section);
+});
+
+// ---------- State ----------
+const STORAGE_KEY = "guitarProgress";
+function loadState(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {curriculum:{}, songs:{}}; }
+  catch(e){ return {curriculum:{}, songs:{}}; }
+}
+let STATE = loadState();
+if (!STATE.curriculum) STATE.curriculum = {};
+if (!STATE.songs) STATE.songs = {};
+
+function saveLocal(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); }
+
+function renderChecks(){
+  let done = 0;
+  MODULES.forEach(mod => {
+    let modDone = 0;
+    mod.items.forEach((text, i) => {
+      const id = `${mod.id}-${i+1}`;
+      const cb = document.querySelector(`#item-${id} input`);
+      const row = document.getElementById(`item-${id}`);
+      const checked = !!STATE.curriculum[id];
+      cb.checked = checked;
+      row.classList.toggle("done", checked);
+      if (checked){ done++; modDone++; }
+    });
+    document.getElementById(`count-${mod.id}`).textContent = `${modDone} / ${mod.items.length}`;
+  });
+  document.getElementById("progressText").textContent = `${done} / ${TOTAL_ITEMS}`;
+  document.getElementById("progressFill").style.width = TOTAL_ITEMS ? `${Math.round(done/TOTAL_ITEMS*100)}%` : "0%";
+
+  const georgiaCb = document.getElementById("song-georgia");
+  georgiaCb.checked = !!STATE.songs.georgia;
+}
+
+curriculumListEl.addEventListener("change", e => {
+  if (e.target.matches("input[type=checkbox]")){
+    const id = e.target.dataset.id;
+    STATE.curriculum[id] = e.target.checked;
+    saveLocal(); renderChecks(); schedulePush();
+  }
+});
+document.getElementById("song-georgia").addEventListener("change", e => {
+  STATE.songs.georgia = e.target.checked;
+  saveLocal(); renderChecks(); schedulePush();
+});
+
+// ---------- Tabs ----------
+document.querySelectorAll(".tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".pane").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(`pane-${btn.dataset.tab}`).classList.add("active");
+  });
+});
+
+// ---------- Supabase sync ----------
+const SUPABASE_URL = "https://dpeabzxbjbodzebhomvt.supabase.co";
+const SUPABASE_KEY = "sb_publishable_m8ViBAp6eQZlj5ywjIGodQ_xh8fUMM6";
+const GUITAR_SECRET = "474807ab691301861f0c68fd79173621c32288daff2ab321";
+const SB_HEADERS = {
+  apikey: SUPABASE_KEY,
+  "x-guitar-secret": GUITAR_SECRET,
+  Authorization: `Bearer ${SUPABASE_KEY}`,
+  "Content-Type": "application/json"
+};
+let remoteRowId = null;
+let syncTimer = null;
+
+function setSyncStatus(text){ document.getElementById("syncStatus").textContent = text; }
+
+function mergeRemote(payload){
+  if (!payload) return false;
+  let changed = false;
+  const rc = payload.curriculum || {};
+  for (const k in rc){ if (rc[k] && !STATE.curriculum[k]){ STATE.curriculum[k] = true; changed = true; } }
+  const rs = payload.songs || {};
+  for (const k in rs){ if (rs[k] && !STATE.songs[k]){ STATE.songs[k] = true; changed = true; } }
+  if (changed) saveLocal();
+  return changed;
+}
+
+async function pullFromRemote(){
+  setSyncStatus("syncing…");
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/guitar_progress?select=id,payload&order=id.asc&limit=1`, {headers: SB_HEADERS});
+    if (!res.ok) throw new Error("pull failed " + res.status);
+    const rows = await res.json();
+    if (rows.length){
+      remoteRowId = rows[0].id;
+      mergeRemote(rows[0].payload);
+      renderChecks();
+    }
+    setSyncStatus("synced");
+    schedulePush(0);
+  } catch(e){
+    setSyncStatus("offline — using local data");
+  }
+}
+function schedulePush(delay){
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(pushToRemote, delay === undefined ? 1500 : delay);
+}
+async function pushToRemote(){
+  const body = {payload: {curriculum: STATE.curriculum, songs: STATE.songs}, updated_at: new Date().toISOString()};
+  try {
+    let res;
+    if (remoteRowId){
+      res = await fetch(`${SUPABASE_URL}/rest/v1/guitar_progress?id=eq.${remoteRowId}`, {
+        method: "PATCH", headers: SB_HEADERS, body: JSON.stringify(body)
+      });
+    } else {
+      res = await fetch(`${SUPABASE_URL}/rest/v1/guitar_progress`, {
+        method: "POST",
+        headers: Object.assign({}, SB_HEADERS, {Prefer: "return=representation"}),
+        body: JSON.stringify([body])
+      });
+    }
+    if (!res.ok) throw new Error("push failed " + res.status);
+    if (!remoteRowId){
+      const rows = await res.json();
+      if (rows.length) remoteRowId = rows[0].id;
+    }
+    setSyncStatus("synced just now");
+  } catch(e){
+    setSyncStatus("sync failed — will retry");
+  }
+}
+
+renderChecks();
+pullFromRemote();
+document.getElementById("generatedStamp").textContent = "Generated " + new Date().toLocaleDateString("en-US", {weekday:"long", month:"long", day:"numeric", year:"numeric"});
+</script>
+</body>
+</html>
