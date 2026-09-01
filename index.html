@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Guitar Practice</title>
 <link rel="icon" href="data:,">
 <style>
@@ -60,7 +60,14 @@
   table.wishlist th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);padding:6px 8px;border-bottom:1px solid var(--border);}
   table.wishlist td{padding:8px;border-bottom:1px solid var(--border-light);vertical-align:top;}
   .table-scroll{overflow-x:auto;}
-  .ref-img{width:100%;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:22px;display:block;}
+  .ref-img{width:100%;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:22px;display:block;cursor:zoom-in;}
+  .lesson-img-link{display:inline-block;margin-left:6px;font-size:12.5px;font-weight:600;color:var(--accent);text-decoration:underline;text-underline-offset:2px;white-space:nowrap;}
+  .song-img-link{display:inline-block;margin-top:10px;font-size:12.5px;font-weight:600;color:var(--accent);text-decoration:underline;text-underline-offset:2px;cursor:pointer;}
+  .lightbox-overlay{position:fixed;inset:0;background:rgba(15,12,11,.92);display:none;align-items:center;justify-content:center;z-index:1000;padding:24px;}
+  .lightbox-overlay.open{display:flex;}
+  .lightbox-img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.4);cursor:zoom-out;}
+  .lightbox-close{position:absolute;top:16px;right:18px;color:#fff;font-size:28px;line-height:1;background:rgba(255,255,255,.12);border:none;border-radius:50%;width:44px;height:44px;cursor:pointer;}
+  .lightbox-caption{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:rgba(255,255,255,.75);font-size:13px;padding:0 24px;}
   table.fret{width:100%;border-collapse:collapse;font-size:13px;min-width:480px;}
   table.fret th, table.fret td{padding:6px 8px;text-align:center;border:1px solid var(--border-light);}
   table.fret th{background:var(--border-light);font-size:11.5px;}
@@ -122,6 +129,7 @@ Am I living it right?
 F                    C
 Why,        why Georgia, why?</div>
           <div class="song-note">F chord: your PDF shows a partial voicing near the 1st fret (low E string), not a full barre F &mdash; use the exact shape in Why Georgia.pdf.</div>
+          <a href="#" class="song-img-link" data-img="images/georgia-f-c-g-diagram.jpg" data-alt="Why Georgia F-C-G fretboard diagram">View the F-C-G diagram</a>
           <label class="learned-toggle">
             <input type="checkbox" id="song-georgia">
             <span>I can play this start to finish</span>
@@ -164,13 +172,19 @@ Why,        why Georgia, why?</div>
   </div>
 </div>
 
+<div class="lightbox-overlay" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
 <script>
 // ---------- Curriculum data (mirrors guitar-curriculum.md) ----------
 const MODULES = [
   {id:"m0", title:"Module 0 — Setup", items:[
     "Learn the parts of the guitar (headstock, tuning pegs, nut, frets, fretboard, body, bridge, strings)",
     "Learn proper sitting position and how to hold the guitar",
-    "Learn to read a chord diagram: dots = fingers, numbers = fret, X = don't play, O = open",
+    {text:"Learn to read a chord diagram: dots = fingers, numbers = fret, X = don't play, O = open", img:"images/chord-g.jpg", alt:"G chord diagram"},
     "Learn the string names low to high: E A D G B e",
     "Tune the guitar to standard tuning using a tuner app"
   ]},
@@ -181,9 +195,9 @@ const MODULES = [
     "Finger independence drill: walk fingers 1-2-3-4 up a string, one fret each"
   ]},
   {id:"m2", title:"Module 2 — First Chords: The Easy Three", items:[
-    "Em — <code>0 2 2 0 0 0</code> (2 fingers)",
-    "Am — <code>x 0 2 2 1 0</code> (3 fingers)",
-    "C — <code>x 3 2 0 1 0</code> (3 fingers)",
+    {text:"Em — <code>0 2 2 0 0 0</code> (2 fingers)", img:"images/chord-em.jpg", alt:"Em chord diagram"},
+    {text:"Am — <code>x 0 2 2 1 0</code> (3 fingers)", img:"images/chord-am.jpg", alt:"Am chord diagram"},
+    {text:"C — <code>x 3 2 0 1 0</code> (3 fingers)", img:"images/chord-c.jpg", alt:"C chord diagram"},
     "Practice switching Em to Am and back",
     "Practice switching Am to C and back"
   ]},
@@ -195,8 +209,8 @@ const MODULES = [
     "Apply that pattern to a single held chord (Em) until steady"
   ]},
   {id:"m4", title:"Module 4 — Expanding the Chord Vocabulary", items:[
-    "G — your chart's version, same notes as <code>3 2 0 0 0 3</code>",
-    "D — <code>x x 0 2 3 2</code>",
+    {text:"G — your chart's version, same notes as <code>3 2 0 0 0 3</code>", img:"images/chord-g.jpg", alt:"G chord diagram"},
+    {text:"D — <code>x x 0 2 3 2</code>", img:"images/chord-d.jpg", alt:"D chord diagram"},
     "Practice switching G to D and back",
     "Practice switching C to G and back",
     "Practice switching D to Em and back"
@@ -207,14 +221,14 @@ const MODULES = [
     "Focus on clean chord changes landing on the beat"
   ]},
   {id:"m6", title:"Module 6 — Key of G Diatonic Chords", items:[
-    "Bm — the iii chord in your chart (a stretch, take it slow)",
-    "F#dim — the vii° chord, mostly a passing chord, low priority",
+    {text:"Bm — the iii chord in your chart (a stretch, take it slow)", img:"images/chord-bm.jpg", alt:"Bm chord diagram"},
+    {text:"F#dim — the vii° chord, mostly a passing chord, low priority", img:"images/chord-f-sharp-dim.jpg", alt:"F sharp diminished chord diagram"},
     "Review: play all seven diatonic chords in order — G, Am, Bm, C, D, Em, F#dim"
   ]},
   {id:"m7", title:"Module 7 — Rounding Out the Beginner Chord Set", items:[
     "A — <code>x 0 2 2 2 0</code>",
     "E — <code>0 2 2 1 0 0</code>",
-    "F (simplified) — see the partial voicing in Why Georgia.pdf",
+    {text:"F (simplified) — see the partial voicing in Why Georgia.pdf", img:"images/georgia-f-c-g-diagram.jpg", alt:"F, C, G fretboard diagram from Why Georgia"},
     "Practice switching A to D and back",
     "Practice switching E to Am and back"
   ]},
@@ -223,7 +237,7 @@ const MODULES = [
     "Practice changing chords in time while speaking the lyrics, no strumming yet"
   ]},
   {id:"m9", title:"Module 9 — First Full Song", items:[
-    "Learn Why Georgia — John Mayer (see Songs tab)",
+    {text:"Learn Why Georgia — John Mayer (see Songs tab)", img:"images/why-georgia-chart.jpg", alt:"Why Georgia chord chart"},
     "Play through the chorus slowly, chord by chord",
     "Add the strum pattern once changes are clean",
     "Play the full excerpt at tempo"
@@ -234,11 +248,11 @@ const MODULES = [
     "Play each one start to finish at a comfortable tempo"
   ]},
   {id:"m11", title:"Module 11 — Notes and Basic Theory (optional)", items:[
-    "Learn the natural notes on the low E string, frets 1–12",
-    "Learn the natural notes on the A string",
-    "Learn the G major scale ascending",
-    "Play the G major scale descending",
-    "Understand what \"key of G\" means"
+    {text:"Learn the natural notes on the low E string, frets 1–12", img:"images/fretboard-low-e.jpg", alt:"Low E string natural notes, frets 1 to 12"},
+    {text:"Learn the natural notes on the A string", img:"images/fretboard-a-string.jpg", alt:"A string natural notes"},
+    {text:"Learn the G major scale ascending", img:"images/scale-notation.jpg", alt:"G major scale notation"},
+    {text:"Play the G major scale descending", img:"images/scale-notation.jpg", alt:"G major scale notation"},
+    {text:"Understand what \"key of G\" means", img:"images/key-of-g-scale-and-chords.jpg", alt:"Key of G scale and chords reference"}
   ]}
 ];
 
@@ -251,13 +265,17 @@ MODULES.forEach(mod => {
   head.className = "module-head";
   head.innerHTML = `<div class="module-title">${mod.title}</div><div class="module-count" id="count-${mod.id}"></div>`;
   section.appendChild(head);
-  mod.items.forEach((text, i) => {
+  mod.items.forEach((item, i) => {
     TOTAL_ITEMS++;
     const id = `${mod.id}-${i+1}`;
+    const text = typeof item === "string" ? item : item.text;
+    const img = typeof item === "object" ? item.img : null;
+    const alt = typeof item === "object" ? (item.alt || "") : "";
     const row = document.createElement("label");
     row.className = "item";
     row.id = `item-${id}`;
-    row.innerHTML = `<input type="checkbox" data-id="${id}"><span class="item-text">${text}</span>`;
+    const linkHtml = img ? ` <a href="#" class="lesson-img-link" data-img="${img}" data-alt="${alt}">view</a>` : "";
+    row.innerHTML = `<input type="checkbox" data-id="${id}"><span class="item-text">${text}</span>${linkHtml}`;
     section.appendChild(row);
   });
   curriculumListEl.appendChild(section);
@@ -316,6 +334,50 @@ document.querySelectorAll(".tab").forEach(btn => {
     document.querySelectorAll(".pane").forEach(p => p.classList.remove("active"));
     btn.classList.add("active");
     document.getElementById(`pane-${btn.dataset.tab}`).classList.add("active");
+  });
+});
+
+// ---------- Lightbox ----------
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+const lightboxCaption = document.getElementById("lightboxCaption");
+const lightboxClose = document.getElementById("lightboxClose");
+
+function openLightbox(src, alt) {
+  lightboxImg.src = src;
+  lightboxImg.alt = alt || "";
+  lightboxCaption.textContent = alt || "";
+  lightbox.classList.add("open");
+}
+function closeLightbox() {
+  lightbox.classList.remove("open");
+  lightboxImg.src = "";
+}
+lightboxClose.addEventListener("click", closeLightbox);
+lightbox.addEventListener("click", (e) => {
+  if (e.target === lightbox) closeLightbox();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeLightbox();
+});
+
+document.querySelectorAll(".ref-img").forEach(img => {
+  img.addEventListener("click", () => openLightbox(img.getAttribute("src"), img.getAttribute("alt")));
+});
+
+curriculumListEl.addEventListener("click", (e) => {
+  const link = e.target.closest(".lesson-img-link");
+  if (!link) return;
+  e.preventDefault();
+  e.stopPropagation();
+  openLightbox(link.dataset.img, link.dataset.alt);
+});
+
+document.querySelectorAll(".song-img-link").forEach(link => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openLightbox(link.dataset.img, link.dataset.alt);
   });
 });
 
