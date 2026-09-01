@@ -61,8 +61,10 @@
   table.wishlist td{padding:8px;border-bottom:1px solid var(--border-light);vertical-align:top;}
   .table-scroll{overflow-x:auto;}
   .ref-img{width:100%;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:22px;display:block;cursor:zoom-in;}
-  .lesson-img-link{display:inline-block;margin-left:6px;font-size:12.5px;font-weight:600;color:var(--accent);text-decoration:underline;text-underline-offset:2px;white-space:nowrap;}
-  .song-img-link{display:inline-block;margin-top:10px;font-size:12.5px;font-weight:600;color:var(--accent);text-decoration:underline;text-underline-offset:2px;cursor:pointer;}
+  .lesson-img-link{display:inline-flex;align-items:center;gap:4px;margin-left:4px;padding:5px 12px;font-size:12px;font-weight:700;color:#fff;background:var(--accent);border-radius:999px;text-decoration:none;white-space:nowrap;box-shadow:0 1px 3px rgba(21,19,18,.18);}
+  .lesson-img-link:active{opacity:.75;}
+  .song-img-link{display:inline-flex;align-items:center;gap:4px;margin-top:10px;padding:7px 14px;font-size:12.5px;font-weight:700;color:#fff;background:var(--accent);border-radius:999px;text-decoration:none;cursor:pointer;box-shadow:0 1px 3px rgba(21,19,18,.18);}
+  .song-img-link:active{opacity:.75;}
   .lightbox-overlay{position:fixed;inset:0;background:rgba(15,12,11,.92);display:none;align-items:center;justify-content:center;z-index:1000;padding:24px;}
   .lightbox-overlay.open{display:flex;}
   .lightbox-img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.4);cursor:zoom-out;}
@@ -182,17 +184,17 @@ Why,        why Georgia, why?</div>
 // ---------- Curriculum data (mirrors guitar-curriculum.md) ----------
 const MODULES = [
   {id:"m0", title:"Module 0 — Setup", items:[
-    "Learn the parts of the guitar (headstock, tuning pegs, nut, frets, fretboard, body, bridge, strings)",
-    "Learn proper sitting position and how to hold the guitar",
+    {text:"Learn the parts of the guitar (headstock, tuning pegs, nut, frets, fretboard, body, bridge, strings)", img:"images/guitar-anatomy.jpg", alt:"Labeled diagram of guitar parts"},
+    {text:"Learn proper sitting position and how to hold the guitar", img:"images/sitting-position.jpg", alt:"Diagram of proper sitting position holding the guitar"},
     {text:"Learn to read a chord diagram: dots = fingers, numbers = fret, X = don't play, O = open", img:"images/chord-g.jpg", alt:"G chord diagram"},
-    "Learn the string names low to high: E A D G B e",
-    "Tune the guitar to standard tuning using a tuner app"
+    {text:"Learn the string names low to high: E A D G B e", img:"images/string-names.jpg", alt:"Diagram of string names, low to high"},
+    {text:"Tune the guitar to standard tuning using a tuner app", img:"images/string-names.jpg", alt:"Diagram of string names, low to high"}
   ]},
   {id:"m1", title:"Module 1 — Fretting Hand Fundamentals", items:[
-    "Learn finger numbering: 1 index, 2 middle, 3 ring, 4 pinky",
-    "Practice pressing single notes cleanly on each string, no buzzing",
-    "Learn proper thumb position on the back of the neck",
-    "Finger independence drill: walk fingers 1-2-3-4 up a string, one fret each"
+    {text:"Learn finger numbering: 1 index, 2 middle, 3 ring, 4 pinky", img:"images/finger-numbering.jpg", alt:"Fretting-hand finger numbers diagram"},
+    {text:"Practice pressing single notes cleanly on each string, no buzzing", img:"images/pressing-notes.jpg", alt:"Diagram of correct finger placement near the fret to avoid buzzing"},
+    {text:"Learn proper thumb position on the back of the neck", img:"images/thumb-position.jpg", alt:"Diagram of thumb position on the back of the neck"},
+    {text:"Finger independence drill: walk fingers 1-2-3-4 up a string, one fret each", img:"images/finger-numbering.jpg", alt:"Fretting-hand finger numbers diagram"}
   ]},
   {id:"m2", title:"Module 2 — First Chords: The Easy Three", items:[
     {text:"Em — <code>0 2 2 0 0 0</code> (2 fingers)", img:"images/chord-em.jpg", alt:"Em chord diagram"},
@@ -274,8 +276,8 @@ MODULES.forEach(mod => {
     const row = document.createElement("label");
     row.className = "item";
     row.id = `item-${id}`;
-    const linkHtml = img ? ` <a href="#" class="lesson-img-link" data-img="${img}" data-alt="${alt}">view</a>` : "";
-    row.innerHTML = `<input type="checkbox" data-id="${id}"><span class="item-text">${text}</span>${linkHtml}`;
+    const linkHtml = img ? ` <a href="#" class="lesson-img-link" data-img="${img}" data-alt="${alt}">View</a>` : "";
+    row.innerHTML = `<input type="checkbox" data-id="${id}"><span class="item-text">${text}${linkHtml}</span>`;
     section.appendChild(row);
   });
   curriculumListEl.appendChild(section);
